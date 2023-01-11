@@ -1,0 +1,2 @@
+play.repository.type: memory
+#play.repository.type: mongodb

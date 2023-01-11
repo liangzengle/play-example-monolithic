@@ -1,0 +1,15 @@
+.idea
+
+.gradle
+
+build
+
+/doc
+
+logs/*
+
+robot/logs/
+
+entity_back_up
+
+/hotswap
