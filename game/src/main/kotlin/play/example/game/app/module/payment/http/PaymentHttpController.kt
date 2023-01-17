@@ -34,7 +34,7 @@ class PaymentHttpController(manager: AdminHttpActionManager, private val playerE
     return if (r.isOk()) {
       ok(0, "success")
     } else {
-      ok(r.getErrorCode(), r.asErr().msg ?: "failed")
+      ok(r.getErrorCode(), r.asErr().args.toString())
     }
   }
 

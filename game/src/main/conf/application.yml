@@ -6,8 +6,20 @@ spring:
   autoconfigure:
     exclude:
       - org.springframework.boot.autoconfigure.mongo.MongoReactiveAutoConfiguration
-  profiles:
-    include:
-      - db
 
 #logging.level.root: DEBUG
+
+play:
+  hotswap:
+    enabled: false
+  repository:
+    type: memory
+
+rsocket:
+  client:
+    brokers:
+#      - tcp://localhost:8888
+    connectTimeout: 10s
+    auth:
+      type: token
+      token: cWpC&amp;yK##K0bvCXd

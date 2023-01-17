@@ -1,0 +1,5 @@
+package play.example.module.common.message;
+
+message StringListProto {
+  repeated string elements = 1;
+}

@@ -5,6 +5,7 @@ import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import play.example.game.app.module.player.PlayerManager.Self
+import play.example.module.common.message.StringListProto
 import play.mvc.Cmd
 import play.mvc.Controller
 import play.mvc.MsgId
@@ -155,14 +156,13 @@ object Generator {
             .addStatement("%L(player, data, req as? %L)", respFunName, requestParamsClassName)
             .nextControlFlow("else")
             .apply {
-              if (returnType == ANY) addStatement("val data = %M", Types.EmptyByteArray)
-              else addStatement(
-                "val data = if(response.body.isEmpty()) null else %T.decode(response.body, %T::class)",
+              addStatement(
+                "val args = if(response.body.isEmpty()) null else %T.decode(response.body, %T::class)",
                 Types.MessageCodec,
-                returnType
+                StringListProto::class
               )
             }
-            .addStatement("%L(player, statusCode, data, req as? %L)", respErrorFunName, requestParamsClassName)
+            .addStatement("%L(player, statusCode, args, req as? %L)", respErrorFunName, requestParamsClassName)
             .endControlFlow()
             .endControlFlow()
             .build()
@@ -171,7 +171,7 @@ object Generator {
         .addModifiers(KModifier.OPEN)
         .addParameter("player", Types.RobotPlayer)
         .addParameter(ParameterSpec("statusCode", INT))
-        .addParameter("data", returnType.copy(true))
+        .addParameter("args", StringListProto::class.asClassName().copy(true))
         .addParameter(ParameterSpec("req", requestParamsClassName.copy(true)))
         .addCode("""System.err.println("$respErrorFunName error: ${'$'}statusCode")""")
 

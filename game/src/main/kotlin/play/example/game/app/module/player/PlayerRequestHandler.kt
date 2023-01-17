@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component
 import play.codec.MessageCodec
 import play.example.common.StatusCode
 import play.example.game.container.net.Session
+import play.example.module.common.message.StringListProto
 import play.mvc.*
 import play.util.control.getCause
 import play.util.exception.isFatal
@@ -60,10 +61,16 @@ class PlayerRequestHandler(private val requestDispatcher: RequestDispatcher) {
       return
     }
     when (result) {
-      is RequestResult.Normal<*> -> write(
+      is RequestResult.Ok<*> -> write(
         playerId,
-        Response(request.header, result.code, MessageCodec.encode(result.value))
+        Response(request.header, 0, MessageCodec.encode(result.value))
       )
+
+      is RequestResult.Err -> write(
+        playerId,
+        Response(request.header, result.code, if (result.args.isEmpty()) null else StringListProto(result.args))
+      )
+
       is RequestResult.Future -> {
         // TODO should pipe to actor？
         result.future.onComplete {
@@ -71,6 +78,7 @@ class PlayerRequestHandler(private val requestDispatcher: RequestDispatcher) {
           else onFailure(playerId, request, it.getCause())
         }
       }
+
       RequestResult.None -> {
       }
     }
