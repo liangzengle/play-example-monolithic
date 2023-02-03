@@ -9,7 +9,7 @@ import com.google.common.collect.ImmutableList
 import com.google.common.collect.Lists
 import jakarta.validation.Valid
 import org.eclipse.collections.api.factory.primitive.IntLongMaps
-import org.eclipse.collectionx.toJava
+import org.eclipse.collectionx.asJava
 import play.example.game.app.module.reward.RewardHelper
 import play.util.json.Json
 
@@ -86,7 +86,7 @@ class CostList private constructor(
   /**
    * @return convert to a map which key is id and value is num
    */
-  fun toMap(): Map<Int, Long> = IntLongMaps.immutable.from(costs, { it.id }, { it.num }).toJava()
+  fun toMap(): Map<Int, Long> = IntLongMaps.immutable.from(costs, { it.id }, { it.num }).asJava()
 
   fun isEmpty() = costs.isEmpty()
 

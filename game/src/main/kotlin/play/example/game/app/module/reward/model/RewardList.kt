@@ -8,7 +8,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.google.common.collect.ImmutableList
 import jakarta.validation.Valid
 import org.eclipse.collections.api.factory.primitive.IntLongMaps
-import org.eclipse.collectionx.toJava
+import org.eclipse.collectionx.asJava
 import play.example.game.app.module.reward.RewardHelper
 import play.util.json.Json
 
@@ -59,7 +59,7 @@ class RewardList private constructor(
   /**
    * @return convert to a map which key is id and value is num
    */
-  fun toMap(): Map<Int, Long> = IntLongMaps.immutable.from(rewards, { it.id }, { it.num }).toJava()
+  fun toMap(): Map<Int, Long> = IntLongMaps.immutable.from(rewards, { it.id }, { it.num }).asJava()
 
   fun isEmpty() = rewards.isEmpty()
 
