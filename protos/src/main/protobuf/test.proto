@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package play.example.module.test.message;
+
+import "play/play.proto";
+
+message MyProto {
+  option (play.play_message_option).implements = "play.example.protos.MyProtoInterface";
+  int32 id = 1 [(play.play_field_option).override = true];
+//  play.wire.protobuf.MessageOptions options = 1;
+  int32 status = 2;
+  play.IntListValue progresses = 3;
+}

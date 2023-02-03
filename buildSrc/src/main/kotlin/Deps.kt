@@ -49,6 +49,7 @@ object Deps {
     const val Net = "me.play:play-net:$Version"
     const val Res = "me.play:play-res:$Version"
     const val Spring = "me.play:play-spring:$Version"
+    const val Wire = "me.play:play-wire:$Version"
 
     object RSocket {
       const val Common = "me.play:play-rsocket-common:$Version"
