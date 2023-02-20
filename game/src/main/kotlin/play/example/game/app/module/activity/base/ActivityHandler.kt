@@ -1,7 +1,8 @@
 package play.example.game.app.module.activity.base
 
+import com.squareup.wire.Message
 import play.example.game.app.module.activity.base.entity.ActivityEntity
-import play.example.game.app.module.activity.base.entity.PlayerActivityEntity
+import play.example.game.app.module.activity.base.entity.PlayerActivityData
 import play.example.game.app.module.activity.base.res.ActivityResource
 import play.example.game.app.module.activity.base.stage.ActivityStage
 import play.example.game.app.module.player.PlayerManager
@@ -28,7 +29,7 @@ interface ActivityHandler : BeanWithType<ActivityType> {
         }
       }
     } catch (e: Exception) {
-      ActivityActor.logger.error(e) { "活动[${resource.id}]处理报错" }
+      logger.error(e) { "活动[${resource.id}]处理报错" }
     }
   }
 
@@ -49,9 +50,25 @@ interface ActivityHandler : BeanWithType<ActivityType> {
 
   fun join(
     self: PlayerManager.Self,
-    playerActivityEntity: PlayerActivityEntity,
+    playerActivityData: PlayerActivityData,
     activityEntity: ActivityEntity,
     resource: ActivityResource
-  ) {
-  }
+  )
+
+  /**
+   * 活动结算
+   *
+   * @param self Self
+   * @param activityData PlayerActivityData
+   */
+  fun balance(self: PlayerManager.Self, activityData: PlayerActivityData)
+
+  /**
+   * 设置活动数据
+   *
+   * @param self Self
+   * @param playerActivityData PlayerActivityData
+   * @return ActivityProto
+   */
+  fun getDataProto(self: PlayerManager.Self, playerActivityData: PlayerActivityData): Message<*, *>
 }

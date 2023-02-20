@@ -11,7 +11,7 @@ import play.example.game.app.module.activity.base.res.ActivityResource
 object NoneStageHandler : ActivityStageHandler {
   context(ActivityActor)
     override fun start(entity: ActivityEntity, resource: ActivityResource) {
-    check(entity.stage == play.example.game.app.module.activity.base.stage.ActivityStage.None)
+    check(entity.stage == ActivityStage.None)
     refresh(entity, resource)
   }
 

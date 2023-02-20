@@ -14,7 +14,7 @@ import java.time.Duration
 object InitStageHandler : ActivityStageHandler {
   context(ActivityActor)
     override fun start(entity: ActivityEntity, resource: ActivityResource) {
-    check(entity.stage == play.example.game.app.module.activity.base.stage.ActivityStage.None || entity.stage == play.example.game.app.module.activity.base.stage.ActivityStage.Close)
+    check(entity.stage == ActivityStage.None || entity.stage == ActivityStage.Close)
     if (serverConditionService.check(resource.initConditions).isErr()) {
       logger.info { "活动[${resource.id}]初始化失败，条件不满足" }
       return
@@ -28,13 +28,13 @@ object InitStageHandler : ActivityStageHandler {
 
   context(ActivityActor)
     override fun refresh(entity: ActivityEntity, resource: ActivityResource) {
-    check(entity.stage == play.example.game.app.module.activity.base.stage.ActivityStage.Init)
+    check(entity.stage == ActivityStage.Init)
 
     if (triggerContext.isForeverOpen(resource.startTime)) {
       return
     }
 
-    val startTime = entity.startTime
+    val startTime = entity.nextStageTime
     val noticeAhead = resource.noticeAhead
     if (noticeAhead > Duration.ZERO) {
       val noticeTime = startTime - noticeAhead.toMillis()
@@ -68,9 +68,8 @@ object InitStageHandler : ActivityStageHandler {
 
     val foreverOpen = triggerContext.isForeverOpen(resource.startTime)
 
-    entity.stage = play.example.game.app.module.activity.base.stage.ActivityStage.Init
-    entity.startTime = startTime.toMillis()
-
+    entity.stage = ActivityStage.Init
+    entity.nextStageTime = startTime.toMillis()
 
     logger.info { "活动初始化完成: activityId=${resource.id}, startTime=$startTime, foreverOpen=$foreverOpen" }
 

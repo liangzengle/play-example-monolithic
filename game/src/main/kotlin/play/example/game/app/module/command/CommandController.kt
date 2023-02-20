@@ -1,6 +1,8 @@
 package play.example.game.app.module.command
 
 import com.google.common.math.IntMath
+import com.google.common.math.LongMath
+import com.google.common.primitives.Longs
 import org.springframework.stereotype.Component
 import play.example.game.app.module.ModuleId
 import play.example.game.app.module.command.entity.CommandId
@@ -30,8 +32,15 @@ class CommandController(
   private val entityCache: CommandStatisticsEntityCache
 ) : AbstractController(ModuleId.Command) {
 
+  /**
+   * 执行gm命令
+   *
+   * @param self Self
+   * @param cmd String
+   * @return RequestResult<CommandResult>
+   */
   @Cmd(1)
-  fun use(self: Self, cmd: String): RequestResult<CommandResult> = RequestResult {
+  fun exec(self: Self, cmd: String): RequestResult<CommandResult> = RequestResult {
     val cmdParts = cmd.split(' ')
     ok {
       if (cmdParts.size < 2) {
@@ -47,8 +56,12 @@ class CommandController(
     }
   }
 
+  /**
+   * 获取gm命令列表
+   * @return RequestResult<CommandModuleListProto>
+   */
   @Cmd(2)
-  fun list(self: Self): RequestResult<CommandModuleListProto> {
+  fun list(): RequestResult<CommandModuleListProto> {
     val commandModules = commandService.getCommandModuleDescriptors()
     val selectMostUsedCommands = selectMostUsedCommands(commandModules, 20)
     val mostUsed = CommandModuleDescriptor("mostUsed", "常用", selectMostUsedCommands)
@@ -58,7 +71,7 @@ class CommandController(
   @Suppress("UnstableApiUsage")
   private fun increaseUseTimes(module: String, cmd: String) {
     val entity = entityCache.getOrCreate(1)
-    entity.statistics.merge(CommandId(module, cmd), 1, IntMath::saturatedAdd)
+    entity.statistics.merge(CommandId(module, cmd), 1, LongMath::saturatedAdd)
   }
 
   @Suppress("SameParameterValue")
@@ -68,7 +81,7 @@ class CommandController(
   ): List<CommandDescriptor> {
     val entity = entityCache.getOrCreate(1)
     val topN =
-      entity.statistics.entries.asSequence().sortedByDescending { it.value }.map { it.key }.take(count).toList()
+      entity.statistics.asSequence().sortedByDescending { it.value }.map { it.key }.take(count).toList()
     return commandModules.asSequence().flatMap { it.commands }.filter { topN.contains(CommandId(it.module, it.name)) }
       .toList()
   }

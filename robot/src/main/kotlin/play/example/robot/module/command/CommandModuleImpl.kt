@@ -21,6 +21,7 @@ class CommandModuleImpl : CommandModule() {
     }
   }
 
-  override fun useResp(player: RobotPlayer, data: CommandResult, req: UseRequestParams?) {
+  override fun execResp(player: RobotPlayer, data: CommandResult, req: ExecRequestParams?) {
+    TODO("Not yet implemented")
   }
 }

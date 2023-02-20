@@ -1,17 +1,19 @@
 package play.example.game.app.module.activity.impl.task
 
+import com.squareup.wire.Message
 import org.springframework.stereotype.Component
 import play.example.game.app.module.activity.base.ActivityHandler
 import play.example.game.app.module.activity.base.ActivityTaskEventHandler
 import play.example.game.app.module.activity.base.ActivityType
 import play.example.game.app.module.activity.base.entity.ActivityEntity
-import play.example.game.app.module.activity.base.entity.PlayerActivityEntity
+import play.example.game.app.module.activity.base.entity.PlayerActivityData
 import play.example.game.app.module.activity.base.res.ActivityResource
 import play.example.game.app.module.activity.impl.task.res.TaskActivityResourceSet
 import play.example.game.app.module.player.PlayerManager
 import play.example.game.app.module.player.event.PlayerTaskEventLike
 import play.example.game.app.module.playertask.PlayerTaskTargetHandlerProvider
 import play.example.game.app.module.reward.RewardService
+import play.example.module.activity.message.TaskActivityDataProto
 
 /**
  *
@@ -28,25 +30,31 @@ class TaskActivityHandler(
 
   override fun join(
     self: PlayerManager.Self,
-    playerActivityEntity: PlayerActivityEntity,
+    playerActivityData: PlayerActivityData,
     activityEntity: ActivityEntity,
     resource: ActivityResource
   ) {
-    super.join(self, playerActivityEntity, activityEntity, resource)
 
+  }
+
+  override fun balance(self: PlayerManager.Self, activityData: PlayerActivityData) {
   }
 
   override fun onTaskEvent(
     self: PlayerManager.Self,
     event: PlayerTaskEventLike,
-    playerActivityEntity: PlayerActivityEntity,
+    playerActivityData: PlayerActivityData,
     activityEntity: ActivityEntity,
     resource: ActivityResource
   ) {
     if (!TaskActivityResourceSet.extension().containsTargetType(event.taskEvent.targetType)) {
       return
     }
-    TaskActivityTaskService(playerActivityEntity, targetHandlerProvider, rewardService)
+    TaskActivityTaskService(playerActivityData, targetHandlerProvider, rewardService)
       .onEvent(self, event.taskEvent)
+  }
+
+  override fun getDataProto(self: PlayerManager.Self, playerActivityData: PlayerActivityData): Message<*, *> {
+    return TaskActivityDataProto()
   }
 }

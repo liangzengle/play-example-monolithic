@@ -22,8 +22,8 @@ import java.nio.file.StandardOpenOption
  */
 object ModuleCodegen {
 
-  val moduleName = "ServerTask"
-  val moduleDesc = "全服任务"
+  val moduleName = "Pay"
+  val moduleDesc = "充值"
 
   val modulePackage = "play.example.game.app.module"
   val moduleDir =

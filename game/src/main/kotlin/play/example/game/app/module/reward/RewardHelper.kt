@@ -9,6 +9,8 @@ import play.example.game.app.module.reward.model.Cost
 import play.example.game.app.module.reward.model.Reward
 import play.example.game.app.module.reward.model.RewardList
 import play.example.game.app.module.reward.res.RawReward
+import play.util.collection.sizeCompareTo
+import play.util.max
 
 /**
  *
@@ -21,31 +23,50 @@ object RewardHelper {
 
   @JvmStatic
   fun mergeReward(rewards: Collection<Reward>): ImmutableList<Reward> {
+    return merge(rewards, false, rewards.size)
+  }
+
+  @JvmStatic
+  fun mergeReward(rewards: Sequence<Reward>): ImmutableList<Reward> {
     return merge(rewards, false)
   }
 
   @JvmStatic
   fun mergeCost(costs: Collection<Cost>): ImmutableList<Cost> {
-    return ImmutableList.copyOf(Lists.transform(merge(Collections2.transform(costs) { it!!.reward }, true), ::Cost))
+    return ImmutableList.copyOf(
+      Lists.transform(
+        merge(Collections2.transform(costs) { it!!.reward }, true, costs.size),
+        ::Cost
+      )
+    )
   }
 
   @JvmStatic
-  private fun merge(rewards: Collection<Reward>, isCost: Boolean): ImmutableList<Reward> {
-    return when (val size = rewards.size) {
-      0 -> ImmutableList.of()
-      1 -> {
+  fun mergeCost(costs: Sequence<Cost>): ImmutableList<Cost> {
+    return ImmutableList.copyOf(Lists.transform(merge(costs.map { it.reward }, true), ::Cost))
+  }
+
+
+  @JvmStatic
+  private fun merge(rewards: Sequence<Reward>, isCost: Boolean): ImmutableList<Reward> {
+    return merge(rewards.asIterable(), isCost)
+  }
+
+  @JvmStatic
+  private fun merge(rewards: Iterable<Reward>, isCost: Boolean, sizeHints: Int = -1): ImmutableList<Reward> {
+    return when (if (sizeHints == -1) rewards.sizeCompareTo(1) else sizeHints.compareTo(1)) {
+      -1 -> ImmutableList.of()
+      0 -> {
         val reward = rewards.first()
         if (reward.num <= 0) {
           ImmutableList.of()
-        } else if (rewards is List) {
-          ImmutableList.copyOf(rewards)
         } else {
           ImmutableList.of(reward)
         }
       }
 
       else -> {
-        val merged = FastList<Reward>(size)
+        val merged = FastList<Reward>(sizeHints max 0)
         for (r in rewards) {
           if (r.num > 0) {
             val i = merged.indexOfFirst { it.canMerge(r, isCost) }

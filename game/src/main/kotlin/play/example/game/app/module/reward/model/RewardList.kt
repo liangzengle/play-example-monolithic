@@ -45,6 +45,14 @@ class RewardList private constructor(
     operator fun invoke(rewards: List<Reward>): RewardList {
       return if (rewards.isEmpty()) Empty else RewardList(ImmutableList.copyOf(RewardHelper.mergeReward(rewards)))
     }
+
+    @JvmStatic
+    fun Sequence<RewardList>.collect() = flatMap { it.rewards }.toRewardList()
+
+    @JvmStatic
+    fun Sequence<Reward>.toRewardList(): RewardList {
+      return RewardList(ImmutableList.copyOf(RewardHelper.mergeReward(this)))
+    }
   }
 
   operator fun plus(that: RewardList): RewardList {

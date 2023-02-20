@@ -4,6 +4,7 @@ import org.springframework.stereotype.Component
 import play.entity.cache.EntityCacheManager
 import play.entity.cache.UnsafeEntityCacheOps
 import play.example.game.app.module.player.entity.AbstractPlayerEntity
+import play.util.collection.setOf
 import play.util.collection.toImmutableList
 import play.util.isAssignableFrom
 
@@ -28,17 +29,19 @@ class PlayerEntityCacheInitializer(entityCacheManager: EntityCacheManager) {
    * 玩家注册时，将所有的玩家实体数据缓存置为空值，以减少1次无意义的数据库查询
    */
   fun initWithEmptyValue(id: Long) {
-    return initWithEmptyValue(id, null)
+    initWithEmptyValue(id, null)
   }
 
-  fun initWithEmptyValue(id: Long, except: UnsafeEntityCacheOps<*>?) {
-    @Suppress("RedundantNullableReturnType")
-    val boxedId: Long? = id
+  fun initWithEmptyValue(/* avoid auto boxing */id: Long?, exclusive: UnsafeEntityCacheOps<*>) {
+    initWithEmptyValue(id) { it !== exclusive }
+  }
+
+  fun initWithEmptyValue(/* avoid auto boxing */id: Long?, exclusiveFilter: ((UnsafeEntityCacheOps<*>) -> Boolean)?) {
     val entityCaches = playerEntityCaches
     for (i in entityCaches.indices) {
       val entityCache = entityCaches[i]
-      if (entityCache !== except) {
-        entityCache.initWithEmptyValue(boxedId!!)
+      if (exclusiveFilter == null || !exclusiveFilter(entityCache)) {
+        entityCache.initWithEmptyValue(id as Long)
       }
     }
   }

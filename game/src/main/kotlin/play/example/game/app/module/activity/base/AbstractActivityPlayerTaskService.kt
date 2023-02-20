@@ -2,7 +2,7 @@ package play.example.game.app.module.activity.base
 
 import com.google.common.collect.Lists
 import org.eclipse.collections.api.map.primitive.MutableIntObjectMap
-import play.example.game.app.module.activity.base.entity.PlayerActivityEntity
+import play.example.game.app.module.activity.base.entity.PlayerActivityData
 import play.example.game.app.module.player.PlayerManager
 import play.example.game.app.module.playertask.AbstractPlayerTaskService
 import play.example.game.app.module.playertask.PlayerTaskTargetHandlerProvider
@@ -19,12 +19,12 @@ import play.util.control.ok
  * @author LiangZengle
  */
 abstract class AbstractActivityPlayerTaskService<DATA : TaskData, CONFIG : AbstractTaskResource>(
-  protected val entity: PlayerActivityEntity,
+  protected val data: PlayerActivityData,
   targetHandlerProvider: PlayerTaskTargetHandlerProvider,
   rewardService: RewardService
 ) : AbstractPlayerTaskService<DATA, CONFIG>(targetHandlerProvider, rewardService) {
 
-  protected val activityId get() = entity.id.activityId
+  protected val activityId get() = data.activityId
 
   abstract fun getTaskMap(): MutableIntObjectMap<DATA>
 

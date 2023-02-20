@@ -2,6 +2,8 @@ package play.example.game.app.module.activity.impl.task
 
 import org.eclipse.collections.api.map.primitive.MutableIntObjectMap
 import play.example.game.app.module.activity.base.AbstractActivityPlayerTaskService
+import play.example.game.app.module.activity.base.PlayerActivityDataKey
+import play.example.game.app.module.activity.base.entity.PlayerActivityData
 import play.example.game.app.module.activity.base.entity.PlayerActivityEntity
 import play.example.game.app.module.activity.impl.task.domain.TaskActivityErrorCode
 import play.example.game.app.module.activity.impl.task.domain.TaskActivityLogSource
@@ -21,7 +23,7 @@ import play.example.game.app.module.task.res.TaskResourceExtension
  * @author LiangZengle
  */
 class TaskActivityTaskService(
-  entity: PlayerActivityEntity,
+  entity: PlayerActivityData,
   targetHandlerProvider: PlayerTaskTargetHandlerProvider,
   rewardService: RewardService
 ) : AbstractActivityPlayerTaskService<TaskData, TaskActivityResource>(
@@ -35,7 +37,7 @@ class TaskActivityTaskService(
   override val logSource: TaskLogSource = TaskActivityLogSource
 
   override fun getTaskMap(): MutableIntObjectMap<TaskData> {
-    return entity.getSimpleTaskData()
+    return PlayerActivityDataKey.TaskData.getOrCreate(data)
   }
 
   override fun getResourceExtension(): TaskResourceExtension<TaskActivityResource> {

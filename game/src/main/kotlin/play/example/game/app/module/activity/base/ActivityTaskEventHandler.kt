@@ -1,6 +1,7 @@
 package play.example.game.app.module.activity.base
 
 import play.example.game.app.module.activity.base.entity.ActivityEntity
+import play.example.game.app.module.activity.base.entity.PlayerActivityData
 import play.example.game.app.module.activity.base.entity.PlayerActivityEntity
 import play.example.game.app.module.activity.base.res.ActivityResource
 import play.example.game.app.module.player.PlayerManager
@@ -15,7 +16,7 @@ interface ActivityTaskEventHandler {
   fun onTaskEvent(
     self: PlayerManager.Self,
     event: PlayerTaskEventLike,
-    playerActivityEntity: PlayerActivityEntity,
+    playerActivityData: PlayerActivityData,
     activityEntity: ActivityEntity,
     resource: ActivityResource
   )

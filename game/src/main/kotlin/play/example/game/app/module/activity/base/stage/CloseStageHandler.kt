@@ -13,10 +13,11 @@ object CloseStageHandler : ActivityStageHandler {
 
   context(ActivityActor)
     override fun start(entity: ActivityEntity, resource: ActivityResource) {
-    check(entity.stage == play.example.game.app.module.activity.base.stage.ActivityStage.End)
+    check(entity.stage == ActivityStage.End)
 
-    entity.stage = play.example.game.app.module.activity.base.stage.ActivityStage.Close
+    entity.stage = ActivityStage.Close
     entity.closeTime = Time.currentMillis()
+    entity.nextStageTime = 0L
 
     logger.info { "活动[${resource.id}]关闭了" }
 
@@ -27,7 +28,7 @@ object CloseStageHandler : ActivityStageHandler {
 
   context(ActivityActor)
     override fun refresh(entity: ActivityEntity, resource: ActivityResource) {
-    check(entity.stage == play.example.game.app.module.activity.base.stage.ActivityStage.Close)
+    check(entity.stage == ActivityStage.Close)
 
     // reschedule for next round
     if (resource.openTimes == 0 || entity.openTimes < resource.openTimes) {

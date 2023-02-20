@@ -14,11 +14,11 @@ object EndStageHandler : ActivityStageHandler, ActivityStageHandler.Suspendable,
 
   context(ActivityActor)
     override fun start(entity: ActivityEntity, resource: ActivityResource) {
-    check(entity.stage == play.example.game.app.module.activity.base.stage.ActivityStage.Start)
+    check(entity.stage == ActivityStage.Start)
 
     cancelAllSchedules(ActivityActor.ActivityTriggerEvent::class.java)
 
-    entity.stage = play.example.game.app.module.activity.base.stage.ActivityStage.End
+    entity.stage = ActivityStage.End
     entity.endTime = Time.currentMillis()
 
     logger.info { "活动[${resource.id}]结束了" }
@@ -30,7 +30,7 @@ object EndStageHandler : ActivityStageHandler, ActivityStageHandler.Suspendable,
 
   context(ActivityActor)
     override fun refresh(entity: ActivityEntity, resource: ActivityResource) {
-    check(entity.stage == play.example.game.app.module.activity.base.stage.ActivityStage.End)
+    check(entity.stage == ActivityStage.End)
 
     if (entity.isSuspended()) {
       return
@@ -39,6 +39,7 @@ object EndStageHandler : ActivityStageHandler, ActivityStageHandler.Suspendable,
     val closeTime = entity.endTime + resource.closeDelay.toMillis() + entity.suspendedMillis
     scheduleAt(closeTime, ActivityActor.ActivityClose)
     entity.suspendedMillis = 0
+    entity.nextStageTime = closeTime
 
     logger.info { "活动[${resource.id}]将于[${Time.toLocalDateTime(closeTime)}]关闭" }
   }

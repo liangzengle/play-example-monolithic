@@ -14,17 +14,13 @@ object StartStageHandler : ActivityStageHandler, ActivityStageHandler.Suspendabl
 
   context(ActivityActor)
     override fun start(entity: ActivityEntity, resource: ActivityResource) {
-    check(entity.stage == play.example.game.app.module.activity.base.stage.ActivityStage.Init)
+    check(entity.stage == ActivityStage.Init)
 
     if (serverConditionService.check(resource.startConditions).isErr()) {
       logger.info { "活动[${resource.id}]开启失败，条件不满足" }
       return
     }
-
-    entity.stage = play.example.game.app.module.activity.base.stage.ActivityStage.Start
-    entity.startTime = Time.currentMillis()
-    entity.openTimes++
-
+    entity.start()
     logger.info { "活动[${resource.id}]开始了" }
 
     handler.onStageChanged(entity, resource)
@@ -34,7 +30,7 @@ object StartStageHandler : ActivityStageHandler, ActivityStageHandler.Suspendabl
 
   context(ActivityActor)
     override fun refresh(entity: ActivityEntity, resource: ActivityResource) {
-    check(entity.stage == play.example.game.app.module.activity.base.stage.ActivityStage.Start)
+    check(entity.stage == ActivityStage.Start)
 
     if (entity.isSuspended()) {
       return
@@ -44,6 +40,7 @@ object StartStageHandler : ActivityStageHandler, ActivityStageHandler.Suspendabl
       val endTime = entity.startTime + resource.duration.toMillis() + entity.suspendedMillis
       scheduleAt(endTime, ActivityActor.ActivityEnd)
       entity.suspendedMillis = 0
+      entity.nextStageTime = endTime
       logger.info { "活动[${resource.id}]将于[${Time.toLocalDateTime(endTime)}]结束" }
     }
 

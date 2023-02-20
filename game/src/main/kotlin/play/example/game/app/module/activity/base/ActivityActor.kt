@@ -10,11 +10,13 @@ import play.akka.AbstractTypedActor
 import play.akka.scheduling.ActorScheduler
 import play.akka.scheduling.WithActorScheduler
 import play.example.game.app.module.activity.base.entity.ActivityEntityCache
+import play.example.game.app.module.activity.base.event.ActivityStartPlayerEvent
 import play.example.game.app.module.activity.base.res.ActivityResource
 import play.example.game.app.module.activity.base.res.ActivityResourceSet
 import play.example.game.app.module.activity.base.stage.ActivityStage
 import play.example.game.app.module.activity.base.stage.ActivityStageHandler
 import play.example.game.app.module.activity.base.trigger.ActivityTimeTriggerContext
+import play.example.game.app.module.player.OnlinePlayerService
 import play.example.game.app.module.player.PlayerManager
 import play.example.game.app.module.player.event.PlayerEventBus
 import play.example.game.app.module.player.event.PlayerTaskEventLike
@@ -124,9 +126,9 @@ class ActivityActor(
     val entity = entityCache.getOrNull(id)
     if (entity == null) {
       init(Init)
-      return
+    } else {
+      entity.stage.handler.reload(entity, resource)
     }
-    entity.stage.handler.reload(entity, resource)
   }
 
   private fun forceClose(cmd: ForceClose) {
@@ -175,6 +177,7 @@ class ActivityActor(
     if (!ActivityResourceSet.extension().getChildActivityIds(id).isEmpty) {
       manager.tell(ActivityManager.StartChildren(id))
     }
+    playerActivityService.onActivityStart(id)
   }
 
   private fun end() {
@@ -198,6 +201,7 @@ class ActivityActor(
 
   private fun justClose() {
     startStage(ActivityStage.Close)
+    playerActivityService.onActivityClose(id)
   }
 
   private fun startStage(stage: ActivityStage) {
@@ -230,7 +234,7 @@ class ActivityActor(
 
   private fun onTaskEvent(self: PlayerManager.Self, event: PlayerTaskEventLike) {
     if (currentStage == ActivityStage.Start && handler is ActivityTaskEventHandler) {
-      handler.onTaskEvent(self, event, playerActivityService.getEntity(self, id), getEntity(), resource)
+      handler.onTaskEvent(self, event, playerActivityService.getOrCreateData(self, id), getEntity(), resource)
     }
   }
 

@@ -16,8 +16,14 @@ data class Mail(
 
   constructor(title: I18nText, content: I18nText) : this(title, content, RewardList.Empty, 0)
 
+  constructor(titleId: Int, contentId: Int) : this(titleId, contentId, RewardList.Empty, 0)
+
   constructor(title: I18nText, content: I18nText, rewards: RewardList, logSource: Int) : this(
     title, content, rewards, logSource, Time.currentMillis()
+  )
+
+  constructor(titleId: Int, contentId: Int, rewards: RewardList, logSource: Int) : this(
+    I18nText(titleId), I18nText(contentId), rewards, logSource, Time.currentMillis()
   )
 
   constructor(title: I18nText, content: I18nText, rewards: RewardList, logSource: Int, createTime: Long) : this(
@@ -68,6 +74,12 @@ class MailBuilder {
 
   fun content(contentId: Int, args: List<I18nText.Arg>): MailBuilder {
     content = I18nText(contentId, args)
+    return this
+  }
+
+  fun <T : Any> titleAndContent(t: T?, titleIdMapper: (T) -> Int, contentIdMapper: (T) -> Int): MailBuilder {
+    title(t?.let(titleIdMapper) ?: 0)
+    content(t?.let(contentIdMapper) ?: 0)
     return this
   }
 
