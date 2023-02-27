@@ -28,15 +28,14 @@ import kotlin.io.path.writeText
 
 /**
  *
- * @author LiangZengleX
+ * @author LiangZengle
  */
 object ClientProtocolGenerator {
-  val projectDir = SystemProps.userDir() + "/game"
-  val docDir = SystemProps.userDir() + "/doc"
+  private val projectDir = SystemProps.userDir()
 
-  val doc = Dokka.generate(File(docDir))
+  private val doc = Dokka.generate(File("$projectDir/game"))
 
-  val classScanner = ClassgraphClassScanner(emptyList(), emptyList())
+  private val classScanner = ClassgraphClassScanner(emptyList(), emptyList())
 
   @JvmStatic
   fun main(args: Array<String>) {

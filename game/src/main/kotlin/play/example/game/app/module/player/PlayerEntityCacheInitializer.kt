@@ -4,7 +4,6 @@ import org.springframework.stereotype.Component
 import play.entity.cache.EntityCacheManager
 import play.entity.cache.UnsafeEntityCacheOps
 import play.example.game.app.module.player.entity.AbstractPlayerEntity
-import play.util.collection.setOf
 import play.util.collection.toImmutableList
 import play.util.isAssignableFrom
 
