@@ -25,7 +25,7 @@ class RewardService(
 ) {
   private val logger = getLogger()
 
-  private val sortedProcessors = processorList.sortedWith(Orders.comparator)
+  private val sortedProcessors = processorList.sortedWith(Orders.byClassOrderComparator())
 
   private fun getProcessor(reward: Reward): RewardProcessor? {
     for (i in sortedProcessors.indices) {
