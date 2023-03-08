@@ -1,7 +1,7 @@
 [
   {
     "id": 1000,
-    "type": "TEST",
+    "type": "LOGIN",
     "startTime": {
       "base": "NOW",
       "offset": "10s"
@@ -12,7 +12,7 @@
   },
   {
     "id": 100001,
-    "type": "TEST",
+    "type": "LOGIN",
     "startTime": {
       "base": "NOW",
       "offset": "20s"
@@ -29,7 +29,7 @@
   },
   {
     "id": 200001,
-    "type": "TEST",
+    "type": "PAY",
     "startTime": {
       "base": "NOW",
       "offset": "5m"
